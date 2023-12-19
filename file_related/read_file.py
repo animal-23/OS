@@ -7,6 +7,6 @@ def read_file(file_name):
     except Exception as e:
         print(f"Error: {e}")
 
-file_name = "sampel.txt"
+file_name = "sample.txt"
 
 read_file(file_name)
