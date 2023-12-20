@@ -1,0 +1,475 @@
+LAB INTERNAL 2
+
+1.Link allocation method
+
+class file:
+    def __init__(self):
+        self.fname=""
+        self.start=0
+        self.size=0
+        self.block=[]
+n=int(input("Enter the number of files: "))
+f=[file() for _ in range(n)]
+for i in range(n):
+    f[i].fname=input("Enter file name: ")
+    f[i].start=int(input("Enter starting block: "))
+    f[i].block.append(f[i].start)
+    f[i].size=int(input("Enter number of blocks: "))
+    for j in range(1,f[i].size+1):
+        f[i].block.append(int(input()))
+print("File\tstart\tsize\tblock")
+for i in range(n):
+    print(f"{f[i].fname}\t{f[i].start}\t{f[i].size}\t",end="")
+    for j in range(1,f[i].size):
+        print(f"{f[i].block[j]}-->",end="")
+    print(f"{f[i].block[f[i].size]}")
+
+
+2. Indexed Allocation Method
+
+n=int(input("Enter the number of files:"))
+sb=[]
+s=[]
+m=[]
+b=[]
+for i in range(n):
+    print("enter the starting block and size of file",i+1,":",end="")
+    sb_i,s_i=map(int,input().split())
+    sb.append(sb_i)
+    s.append(s_i)
+    print("enter the blocks occupied by file",i+1,":",end="")
+    m_i=int(input())
+    m.append(m_i)
+    print("Enter blocks of file",i+1,":",end="")
+    b_i=list(map(int,input().split()))
+    b.append(b_i)
+print("Filename\tIndex\tLength")
+for i in range(n):
+    print(i+1,"\t",sb[i],"\t",m[i])
+x=int(input("Enter the file name: "))
+print("file name is ",x)
+print("Index is ",sb[x-1])
+print("blocks occupied are : ",end="")
+for j in range(m[x-1]):
+    print("%3d" % b[i][j], end="")
+
+
+3. Contiguous Allocation method
+
+n=int(input("Enter the number of files: "))
+b=[0]*20
+sb=[0]*20
+t=[0]*20
+c=[[0]*20 for _ in range(20)]
+for i in range(n):
+    b[i]=int(input("Enter the number of blocks occupied by file {} : ".format(i+1)))
+    sb[i]=int(input("Enter the starting block of file {} : ".format(i+1)))
+    t[i]=sb[i]
+    for j in range(b[i]):
+        c[i][j]=sb[i]
+        sb[i]+=1
+print("Filename\tStarting Block\tLength")
+for i in range(n):
+    print("{}\t\t{}\t\t{}".format(i+1,t[i],b[i]))
+x=int(input("enter the file name: "))
+print("File name is {} : ".format(x))
+print("Length is {} : ".format(b[x-1]))
+print("Blocks occupied is : ",end="")
+for i in range(b[x-1]):
+    print("{:4d}".format(c[x-1][i]),end="")
+
+4. Paging Memory management
+
+memo=int(input("Enter the memory size: "))
+page=int(input("Enter the page size: "))
+countp=memo//page
+print("No of pages available : ",countp)
+countf=int(input("enter the number of frames: "))
+print("total size of memory: ",page*countf)
+page_table=[]
+for i in range(countp):
+    fnum=int(input("Enter frame numbers:"))
+    page_table.append([i,fnum])
+print("Page table: ")
+print(page_table)
+pno,off=map(int,input("Enter the logical address:  ").split())
+frame=None
+for i in page_table:
+    if (i[0]==pno):
+        frame=i[1]
+if (frame==None):
+    print("Page not found")
+else:
+    base=int(input("Enter the base register: "))
+    mac=base+frame*page+off
+    print("Physical address is : ",mac)
+
+5. Segmentation Memory Management
+
+count_seg=int(input("Enter the number of segments: "))
+seg_table=[]
+for i in range(count_seg):
+    print("enter the base and limit of segment",i)
+    base,limit=map(int,input().split())
+    seg_table.append([base,limit])
+print(seg_table)
+print("Enter logical address:")
+seg_no,off=map(int,input().split())
+if 0<=seg_no<count_seg:
+    if 0<=off<seg_table[seg_no][1]:
+        mac=seg_table[seg_no][0]+off
+        print("physical address: ",mac)
+    else:
+        print("offset is greater than limit: ")
+else:
+    print("Invalid segment number")
+
+6. getuid
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main()
+{
+    uid_t user_id;
+    user_id=getuid();
+    printf("User id: %d\n",user_id);
+}
+
+7. setuid
+
+#include<stdio.h>
+#include<unistd.h>
+int main()
+{
+    uid_t user_id;
+    user_id=getuid();
+    printf("Before setuid() user id: %d\n",user_id);
+    if (setuid(0)==0)
+    {
+        printf("After setuid() user id: %d\n",getuid());
+    }
+    else
+    {
+        perror("setuid");
+        return 1;
+    }
+}
+
+8.nice
+
+#include<stdio.h>
+#include<unistd.h>
+int main()
+{
+    int current_priority=nice(0);
+    printf("Current process priority value:%d\n",current_priority);
+    int new_priority=nice(10);
+    if (new_priority==-1){
+        perror("nice");
+        return 1;
+    }
+    else
+    {
+        printf("New process priority value:%d\n",new_priority);
+    }
+}
+
+
+9. exec system call
+
+#include<stdlib.h>
+#include<stdio.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<sys/wait.h>
+int main()
+{
+    pid_t pid;
+    printf("executing ls command\n");
+    if ((pid=fork())==0)
+    {
+        execl("/bin/ls","ls","-l",(char*)NULL);
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        wait(NULL);
+        
+    }
+    
+    printf("Executing pwd command\n");
+    if ((pid=fork())==0)
+    {
+        execl("/bin/pwd","pwd",(char*)NULL);
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        wait(NULL);
+    }
+    
+    printf("executing date command\n");
+    if ((pid=fork())==0)
+    {
+        execl("/bin/date","date",(char*)NULL);
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        wait(NULL);
+    }
+    
+    printf("executing echo command\n");
+    if((pid==fork())==0)
+    {
+        execl("/bin/echo","echo","helo",(char*)NULL);
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        wait(NULL);
+    }
+    return 0;
+}
+
+10. stat system call
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main()
+{
+    struct stat file_stat;
+    const char *filename="file1.txt";
+    if(stat(filename,&file_stat)==0)
+    {
+        printf("FIle size is %ld bytes\n",file_stat.st_size);
+        printf("File permissions is %o\n",file_stat.st_mode & 0777);
+    }
+    else
+    {
+        perror("Error getting information");
+    }
+}
+
+11. mount system call
+
+#include<sys/mount.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<stdio.h>
+int main()
+{
+    const char *source_path="/dev/sdb1";
+    const char *target_path="/mnt/external";
+    const char *filesystem_type="ext4";
+    const unsigned long mount_flag=0;
+    
+    if(mount(source_path,target_path,filesystem_type,mount_flag,NULL)==0)
+    {
+        printf("succesfful");
+    }
+    else
+    {
+        perror("error");
+        return 1;
+    }
+    return 0;
+}
+
+
+12.umount system call
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main()
+{
+    const char *target="/mnt/external";
+    if(system("umount/mnt/external")==0)
+
+{
+    printf("unmount successful");
+}    
+else
+{
+    perror("error");
+    return 1;
+}
+return 0;
+    
+}
+
+
+13. chown system call
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main()
+{
+    const char *fp="example.txt";
+    uid_t new_user=1000;
+    gid_t new_group=1000;
+    
+    FILE *file_fp=fopen(fp,"w");
+    if(file_fp==NULL)
+    {
+        perror("error");
+        return 1;
+    }
+    
+    fclose(file_fp);
+    if(chown(fp,new_user,new_group)==0)
+    {
+        printf("Successul");
+    }
+    else
+    {
+        perror("error");
+        return 1;
+    }
+    return 0;
+    
+}
+
+14. chmod system call
+
+#include <stdio.h>
+#include <sys/stat.h>
+
+int main() {
+    const char *file_path = "example.txt";
+    mode_t new_permissions = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;  // Read and write for owner, read for group and others
+
+    // Create a file (you can replace this with opening an existing file)
+    FILE *file_fp = fopen(file_path, "w");
+    if (file_fp == NULL) {
+        perror("Error creating file");
+        return 1;
+    }
+    fclose(file_fp);
+
+    // Change the permissions of the file
+    if (chmod(file_path, new_permissions) == 0) {
+        printf("Permissions changed successfully.\n");
+    } else {
+        perror("Error changing permissions");
+        return 1;
+    }
+
+    return 0;
+}
+
+
+15.link system call
+
+#include<stdio.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<stdlib.h>
+int main()
+{
+    const char *source_file="source.txt";
+    const char *link_file="linked.txt";
+    
+    FILE *source_fp=fopen(source_file,"w");
+    if (source_fp==NULL)
+    {
+        perror("error");
+        return 1;
+    }
+    fclose(source_fp);
+    
+    if (link(source_file,link_file)==0)
+    {
+        printf("Link successful");
+    }
+    else
+    {
+        perror("error");
+        return 1;
+    }
+    return 0;
+}
+
+16. unlink system call
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main()
+{
+    const char *unlink_file="linked.txt";
+    
+    FILE *unlink_fp=fopen(unlink_file,"w");
+    if(unlink_fp==NULL)
+    {
+        perror("error");
+        return 1;
+    }
+    
+    if (unlink(unlink_file)==0)
+    {
+        printf("unlink successful");
+        
+    }
+    else
+    {
+        perror("error");
+        return 1;
+    }
+    return 0;
+}
+
+17. Bankers algorithm
+
+p=int(input("Enter the number of processes: "))
+r=int(input("Enter the number of resources:"))
+print("Enter the allocated matrix: ")
+alloc=[]
+for i in range(p):
+    l=list(map(int,input().strip().split()))
+    alloc.append(l)
+print("Enter the maximum matrix:")
+max=[]
+for i in range(p):
+    l=list(map(int,input().strip().split()))
+    max.append(l)
+print("Enter the available matrix: ")
+avail=list(map(int,input().strip().split()))
+print("Allocated Matrix: ",alloc,end="\n")
+print("Max Matrix: ",max,end="\n")
+print("Available Matrix: ",avail,end="\n")
+finish=[0]*p
+safeseq=[0]*p
+count=0
+for i in range(p):
+    finish[i]=0
+need=[[0 for i in range(r)] for i in range(p)]
+for i in range(p):
+    for j in range(r):
+        need[i][j]=max[i][j]-alloc[i][j]
+x=0
+for k in range(p):
+    for i in range(p):
+        if (finish[i]==0):
+            flag=0
+            for j in range(r):
+                if (need[i][j]>avail[j]):
+                    flag=1
+                    break
+            if (flag==0):
+                safeseq[count]=i
+                count+=1
+                for x in range(r):
+                    avail[x]+=alloc[i][x]
+                finish[i]=1
+                
+print("safe sequence:")
+for i in range(p-1):
+    print("p",safeseq[i],"->",sep="",end="")
+print("p",safeseq[p-1],sep="")
